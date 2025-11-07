@@ -142,7 +142,7 @@ class MCPEngine:
         server_name:str, 
         action:str, 
         tool_name:Optional[str]=None, 
-        tool_arguments:Optional[Dict]=None, 
+        tool_arguments:Optional[str]=None, 
         tool_call_id:Optional[str]=None,
         timeout:float=60
         ) -> List[Dict]:
@@ -150,6 +150,9 @@ class MCPEngine:
         if action not in ["list_tools", "get_description", "get_tool_schema", "execute_tool", "spawn_tool_in_background", "poll_tool_result"]:
             raise ValueError(f"Unsupported action: {action}")
         
+        if tool_arguments is not None:
+            tool_arguments = json.loads(tool_arguments)
+
         session = self.hmap_mcp_server_to_session[server_name]
         match action:
             case "list_tools":
@@ -175,7 +178,11 @@ class MCPEngine:
                 return [
                     {
                         "type": "text", 
-                        "text": json.dumps(hmap_tool_to_schema[tool_name], indent=2)
+                        "text": yaml.dump({
+                            "name": tool_name,
+                            "description": "if you feel confused, use get_description action to get the tool description",
+                            "input_schema": hmap_tool_to_schema[tool_name]
+                        }, sort_keys=False)
                     }
                 ]
             case "execute_tool":

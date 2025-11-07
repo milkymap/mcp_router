@@ -1,5 +1,5 @@
 from enum import Enum 
-from typing import List, Dict, Optional  
+from typing import List, Dict, Optional, Any  
 from pydantic import BaseModel
 from mcp.types import CallToolResult
 
@@ -26,4 +26,4 @@ class BackgroundToolCallStatus(str, Enum):
 class BackgroundToolCallResult(BaseModel):
     status:BackgroundToolCallStatus
     error_message:Optional[str] = None
-    results:Optional[List[CallToolResult]] = None
+    results:Optional[List[Dict[str, Any]]] = None
